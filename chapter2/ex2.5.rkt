@@ -1,0 +1,23 @@
+(define (pow base n)
+  (define (iter i result)
+    (if (= i n)
+        result
+        (iter (+ i 1) (* base result))))
+  (iter 0 1))
+(define (cons x y)
+  (* (pow 2 x) (pow 3 y)))
+
+(define (car z)
+  (define (iter i result)
+    (if (= 0 (remainder i 2))
+        (iter (/ i 2) (+ 1 result))
+        result))
+  (iter z 0))
+
+(define (cdr z)
+  (define (iter i result)
+    (if (= 0 (remainder i 3))
+        (iter (/ i 3) (+ 1 result))
+        result))
+  (iter z 0))
+(cdr (cons 3 2))

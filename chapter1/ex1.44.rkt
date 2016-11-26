@@ -1,0 +1,15 @@
+(define (smooth f)
+  (define dx 0.00001)
+  (lambda (x)
+    (/ (+ (f x) (f (- x dx)) (f (+ x dx))) 3)))
+(define (repeated f n)
+  (define (iter i ff)
+    (if (= i 1)
+        ff
+        (iter (- i 1) (lambda (x) (f (ff x))))))
+  (iter n f))
+(define (smooth-n-times f n)
+  ((repeated smooth n) f))
+
+(define square (lambda (x) (* x x)))
+((smooth-n-times square 10) 5)
