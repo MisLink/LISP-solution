@@ -1,3 +1,4 @@
 .vscode
 **/*.rkt~
 **/*.bak
+auto_add_new_line_at_eof.py
