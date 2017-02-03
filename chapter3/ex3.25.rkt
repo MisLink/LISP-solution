@@ -1,0 +1,51 @@
+#lang planet neil/sicp
+
+(define (insert! key-list value table)
+  (if (list? key-list)
+      (let ((current-key (car key-list))
+            (remain-key (cdr key-list)))
+        (let ((record (assoc current-key (cdr table))))
+          (cond 
+            ((and record (null? remain-key))
+             (set-cdr! record value)
+             table)
+            ((and record remain-key)
+             (insert! remain-key value record)
+             table)
+            ((and (not record) (not (null? remain-key)))
+             (join-in-table (insert! remain-key value (make-table current-key)) table)
+             table)
+            ((and (not record) (null? remain-key))
+             (let ((new-record (cons current-key value)))
+               (join-in-table new-record table)
+               table)))))
+      (insert! (list key-list) value table)))
+
+(define (join-in-table new-record table)
+  (set-cdr! table
+            (cons new-record (cdr table))))
+
+(define (lookup key-list table)
+  (if (list? key-list)
+      (let ((current-key (car key-list))
+            (remain-key (cdr key-list)))
+        (let ((record (assoc current-key (cdr table))))
+          (if record
+              (if (null? remain-key)
+                  (cdr record)
+                  (lookup remain-key record))
+              #f)))
+      (lookup (list key-list) table)))
+
+(define (make-table . table-name) 
+  (if (null? table-name)
+      (list '*table*)
+      table-name))
+
+(define t (make-table))
+(insert! 'a-single-key 10086 t)
+(lookup 'a-single-key t)
+(insert! (list 'key-1 'key-2 'key-3) 123 t)
+(lookup (list 'key-1 'key-2 'key-3) t)
+(insert! (list 'key-1 'key-2 'key-3) 'hello-moto t)
+(lookup (list 'key-1 'key-2 'key-3) t)
