@@ -29,7 +29,8 @@
 (define (get-signal wire)
   (wire 'get-signal))
 (define (set-signal! wire x)
-  (wire 'set-signal!) x)
+  ((wire 'set-signal!) x)
+  'set)
 (define (add-action! wire action-procedure)
   ((wire 'add-action!) action-procedure))
 ;队列
@@ -130,7 +131,7 @@
       (let ((first-seg (first-segment agenda)))
         (set-current-time! agenda (segment-time first-seg))
         (front-queue (segment-queue first-seg)))))
-;;;
+;process
 (define (after-delay delay action)
   (add-to-agenda! (+ delay (current-time the-agenda))
                   action
@@ -152,7 +153,8 @@
                  (display " ")
                  (display (current-time the-agenda))
                  (display " new value: ")
-                 (display (get-signal wire)))))
+                 (display (get-signal wire))
+                 (newline))))
 
 (define the-agenda (make-agenda))
 (define inverter-delay 2)
@@ -175,7 +177,7 @@
                    (lambda ()
                      (set-signal! output new-value)))))
   (add-action! a1 and-action-procdure)
-  (add-action! a1 and-action-procdure))
+  (add-action! a2 and-action-procdure))
 (define (logical-or x y)
   (if (or (= x 1) (= y 1))
       1
@@ -201,17 +203,21 @@
                    (lambda ()
                      (set-signal! output new-value)))))
   (add-action! a1 and-action-procedure)
-  (add-action! a1 and-action-procedure))
+  (add-action! a2 and-action-procedure))
 (define (logical-and x y)
   (cond ((or (= x 0) (= y 0)) 0)
         (else
          1)))
 
-(define input (make-wire))
-(define output (make-wire))
-(inverter input output)
-the-agenda
-(set-signal! input 0)
+(define input1 (make-wire))
+(define input2 (make-wire))
+(define sum (make-wire))
+(define carry (make-wire))
+(half-adder input1 input2 sum carry)
+(probe 'sum sum)
+(probe 'carry carry)
+(set-signal! input1 1)
 (propagate)
-(get-signal output)
-the-agenda
+(set-signal! input2 1)
+(propagate)
+
